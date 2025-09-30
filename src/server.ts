@@ -21,13 +21,21 @@ connectDB()
 
 const server = express()
 const corsOptions: CorsOptions = {
-  origin: function (requestOrigin, callback) {
-    if (requestOrigin === process.env.FRONTEND_URL) {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      'http://localhost:3000'
+    ].filter(Boolean)
+
+    if (!origin) return callback(null, true)
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
-      callback(new Error('CORS Error'))
+      callback(new Error('Not allowed by CORS'), false)
     }
-  }
+  },
+  credentials: true
 }
 server.use(cors(corsOptions))
 server.use(express.json())
