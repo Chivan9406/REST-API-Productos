@@ -10,14 +10,12 @@ import morgan from 'morgan'
 export async function connectDB() {
   try {
     await db.authenticate()
-    db.sync()
-    // console.log(colors.blue.bold('Database connected'))
+    await db.sync()
+    console.log(colors.blue.bold('Database connected'))
   } catch (e) {
     console.log(colors.red.bold('Failed to connect to the database'))
   }
 }
-
-connectDB()
 
 const server = express()
 const corsOptions: CorsOptions = {
