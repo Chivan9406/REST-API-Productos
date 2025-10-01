@@ -86,7 +86,8 @@ router.get('/', getProducts)
  *        description: Invalid ID supplied.
  */
 router.get('/:id',
-  param('id').isInt().withMessage('ID no válido'),
+  param('id')
+    .isInt().withMessage('ID no válido'),
   handlerInputErrors,
   getProductById
 )
@@ -223,7 +224,8 @@ router.put('/:id',
  *        description: Product not found.
  */
 router.patch('/:id',
-  param('id').isInt().withMessage('ID no válido'),
+  param('id')
+    .isInt().withMessage('ID no válido'),
   handlerInputErrors,
   updateAvailability
 )
@@ -257,7 +259,8 @@ router.patch('/:id',
  *        description: Product not found.
  */
 router.delete('/:id',
-  param('id').isInt().withMessage('ID no válido'),
+  param('id')
+    .isInt().withMessage('ID no válido'),
   handlerInputErrors,
   deleteProduct
 )
