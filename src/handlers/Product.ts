@@ -18,7 +18,9 @@ export const getProducts = async (req: Request, res: Response) => {
 export const getProductById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const product = await Product.findByPk(id)
+    const product = await Product.findByPk(id, {
+      attributes: { exclude: [ 'createdAt', 'updatedAt' ] }
+    })
 
     if (!product) return res.status(404).json({ error: 'Producto no encontrado' })
 
