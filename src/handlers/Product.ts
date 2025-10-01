@@ -1,62 +1,90 @@
 import { Request, Response } from 'express'
 import Product from '../models/Product.model'
+import colors from 'colors'
 
 export const getProducts = async (req: Request, res: Response) => {
-  const products = await Product.findAll({
-    order: [
-      [ 'price', 'DESC' ]
-    ]
-  })
-  res.json({ data: products })
+  try {
+    const products = await Product.findAll({
+      order: [ [ 'price', 'DESC' ] ],
+      attributes: { exclude: [ 'createdAt', 'updatedAt' ] }
+    })
+    res.json({ data: products })
+  } catch (e) {
+    console.log(colors.red.bold('Error fetching products:'), e)
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }
 
 export const getProductById = async (req: Request, res: Response) => {
-  const { id } = req.params
-  const product = await Product.findByPk(id)
+  try {
+    const { id } = req.params
+    const product = await Product.findByPk(id)
 
-  if (!product) {
-    return res.status(404).json({ error: 'Producto no encontrado' })
+    if (!product) return res.status(404).json({ error: 'Producto no encontrado' })
+
+    res.json({ data: product })
+  } catch (e) {
+    console.log(colors.red.bold('Error fetching product:'), e)
+    res.status(500).json({ error: 'Internal server error' })
   }
-
-  res.json({ data: product })
 }
 
 export const createProduct = async (req: Request, res: Response) => {
-  const product = await Product.create(req.body)
-  res.status(201).json({ data: product })
+  try {
+    const product = await Product.create(req.body)
+    res.status(201).json({ data: product })
+  } catch (e) {
+    console.log(colors.red.bold('Error creating product:'), e)
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }
 
 export const updateProduct = async (req: Request, res: Response) => {
-  const { id } = req.params
-  const product = await Product.findByPk(id)
+  try {
+    const { id } = req.params
+    const product = await Product.findByPk(id)
 
-  if (!product) return res.status(404).json({ error: 'Producto no encontrado' })
+    if (!product) return res.status(404).json({ error: 'Producto no encontrado' })
 
-  await product.update(req.body)
-  await product.save()
+    await product.update(req.body)
 
-  res.json({ data: product })
+    res.json({ data: product })
+  } catch (e) {
+    console.log(colors.red.bold('Error updating product:'), e)
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }
 
 export const updateAvailability = async (req: Request, res: Response) => {
-  const { id } = req.params
-  const product = await Product.findByPk(id)
+  try {
+    const { id } = req.params
+    const product = await Product.findByPk(id)
 
-  if (!product) return res.status(404).json({ error: 'Producto no encontrado' })
+    if (!product) return res.status(404).json({ error: 'Producto no encontrado' })
 
-  product.availability = !product.dataValues.availability
-  await product.save()
+    product.availability = !product.dataValues.availability
+    await product.save()
 
-  res.json({ data: product })
+    res.json({ data: product })
+  } catch (e) {
+    console.log(colors.red.bold('Error updating product:'), e)
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }
 
 export const deleteProduct = async (req: Request, res: Response) => {
-  const { id } = req.params
-  const product = await Product.findByPk(id)
+  try {
+    const { id } = req.params
 
-  if (!product) return res.status(404).json({ error: 'Producto no encontrado' })
+    const deletedCount = await Product.destroy({
+      where: { id }
+    })
 
-  await product.destroy()
+    if (deletedCount === 0) return res.status(404).json('Producto no encontrado')
 
-  res.json({ data: `Producto con ID ${ id } eliminado correctamente` })
+    res.json({ data: `Producto con ID ${ id } eliminado correctamente` })
+  } catch (e) {
+    console.log(colors.red.bold('Error deleting product:'), e)
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }
